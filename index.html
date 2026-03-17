@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xpense Tracker - Smart Expense Management</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app"></div>
+    
+    <!-- Login Screen Template -->
+    <template id="login-template">
+        <div class="login-container">
+            <div class="login-left">
+                <div class="login-image-wrapper">
+                    <img src="./ExpenseTrackerLogin.webp" alt="Expense Tracker Illustration" class="login-illustration" onerror="this.style.display='none'">
+                    <div class="login-overlay">
+                        <h2>Welcome to Xpense Tracker</h2>
+                        <p>Your personal finance companion for smarter spending</p>
+                    </div>
+                </div>
+            </div>
+            <div class="login-right">
+                <div class="login-form-container">
+                    <div class="logo-section">
+                        <div class="logo-icon">💰</div>
+                        <h1 class="brand-name">Xpense Tracker</h1>
+                    </div>
+                    <h2 class="login-title">Welcome Back!</h2>
+                    <p class="login-subtitle">Sign in to continue managing your expenses</p>
+                    
+                    <form id="login-form" class="login-form">
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" placeholder="robert.chase@walnutai.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                            <span class="toggle-password" id="toggle-password">👁️</span>
+                        </div>
+                        <div class="form-footer">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="remember">
+                                <span>Remember me</span>
+                            </label>
+                            <a href="#" class="forgot-link">Forgot password?</a>
+                        </div>
+                        <button type="submit" class="btn-primary btn-login">
+                            Sign In
+                            <span class="btn-arrow">→</span>
+                        </button>
+                        <div class="demo-credentials">
+                            <p class="demo-title">Demo Credentials:</p>
+                            <p class="demo-text">Email: <strong>robert.chase@walnutai.com</strong></p>
+                            <p class="demo-text">Password: <strong>demo@123</strong></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Dashboard Template -->
+    <template id="dashboard-template">
+        <div class="dashboard-container">
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <div class="logo-icon">💰</div>
+                    <h2 class="sidebar-brand">Xpense</h2>
+                </div>
+                <nav class="sidebar-nav">
+                    <a href="#" class="nav-item active" data-page="overview">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">Overview</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="expenses">
+                        <span class="nav-icon">💳</span>
+                        <span class="nav-text">Expenses</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="budget">
+                        <span class="nav-icon">🎯</span>
+                        <span class="nav-text">Budget</span>
+                    </a>
+                    <a href="#" class="nav-item" data-page="insights">
+                        <span class="nav-icon">📈</span>
+                        <span class="nav-text">Insights</span>
+                    </a>
+                </nav>
+                <div class="sidebar-footer">
+                    <button class="btn-logout" id="logout-btn">
+                        <span class="nav-icon">🚪</span>
+                        <span class="nav-text">Logout</span>
+                    </button>
+                </div>
+            </aside>
+
+            <main class="main-content">
+                <header class="top-bar">
+                    <div class="top-bar-left">
+                        <h1 class="page-title">Dashboard</h1>
+                        <p class="page-subtitle">Track and manage your expenses</p>
+                    </div>
+                    <div class="top-bar-right">
+                        <button class="btn-secondary btn-add-expense" id="add-expense-btn">
+                            <span class="btn-icon">+</span>
+                            Add Expense
+                        </button>
+                        <div class="user-profile">
+                            <div class="user-avatar">RC</div>
+                            <span class="user-name">Robert Chase</span>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="content-area" id="content-area">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+            </main>
+        </div>
+    </template>
+
+    <!-- Overview Page Template -->
+    <template id="overview-template">
+        <div class="overview-page">
+            <div class="stats-grid">
+                <div class="stat-card stat-card-primary">
+                    <div class="stat-icon">💵</div>
+                    <div class="stat-content">
+                        <p class="stat-label">Total Expenses</p>
+                        <h2 class="stat-value" id="total-expenses">$0</h2>
+                        <p class="stat-change positive">↑ 12% from last month</p>
+                    </div>
+                </div>
+                <div class="stat-card stat-card-success">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-content">
+                        <p class="stat-label">This Month</p>
+                        <h2 class="stat-value" id="month-expenses">$0</h2>
+                        <p class="stat-change">Current period</p>
+                    </div>
+                </div>
+                <div class="stat-card stat-card-warning">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-content">
+                        <p class="stat-label">Budget Left</p>
+                        <h2 class="stat-value" id="budget-left">$0</h2>
+                        <p class="stat-change" id="budget-percent">0% of budget</p>
+                    </div>
+                </div>
+                <div class="stat-card stat-card-info">
+                    <div class="stat-icon">🔢</div>
+                    <div class="stat-content">
+                        <p class="stat-label">Transactions</p>
+                        <h2 class="stat-value" id="transaction-count">0</h2>
+                        <p class="stat-change">Total entries</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <div class="card chart-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Spending Trend</h3>
+                        <select class="period-selector" id="chart-period">
+                            <option value="7">Last 7 days</option>
+                            <option value="30" selected>Last 30 days</option>
+                            <option value="90">Last 90 days</option>
+                        </select>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="spending-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card category-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Categories</h3>
+                        <span class="card-badge">Top Spending</span>
+                    </div>
+                    <div class="card-body">
+                        <div id="category-breakdown"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card recent-card">
+                <div class="card-header">
+                    <h3 class="card-title">Recent Expenses</h3>
+                    <a href="#" class="view-all-link" data-page="expenses">View All →</a>
+                </div>
+                <div class="card-body">
+                    <div id="recent-expenses"></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Expenses Page Template -->
+    <template id="expenses-template">
+        <div class="expenses-page">
+            <div class="filters-bar">
+                <div class="filter-group">
+                    <label>Category</label>
+                    <select id="filter-category" class="filter-select">
+                        <option value="">All Categories</option>
+                        <option value="Food">Food</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Bills">Bills</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Health">Health</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Date Range</label>
+                    <select id="filter-date" class="filter-select">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month" selected>This Month</option>
+                        <option value="year">This Year</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Sort By</label>
+                    <select id="filter-sort" class="filter-select">
+                        <option value="date-desc">Newest First</option>
+                        <option value="date-asc">Oldest First</option>
+                        <option value="amount-desc">Highest Amount</option>
+                        <option value="amount-asc">Lowest Amount</option>
+                    </select>
+                </div>
+                <div class="filter-group search-group">
+                    <label>Search</label>
+                    <input type="text" id="filter-search" class="filter-input" placeholder="Search expenses...">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div id="expenses-list"></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Budget Page Template -->
+    <template id="budget-template">
+        <div class="budget-page">
+            <div class="card budget-card">
+                <div class="card-header">
+                    <h3 class="card-title">Monthly Budget</h3>
+                    <button class="btn-secondary btn-small" id="edit-budget-btn">Edit Budget</button>
+                </div>
+                <div class="card-body">
+                    <div class="budget-overview">
+                        <div class="budget-amount">
+                            <p class="budget-label">Total Budget</p>
+                            <h2 class="budget-value" id="budget-total">$0</h2>
+                        </div>
+                        <div class="budget-progress-wrapper">
+                            <div class="budget-progress">
+                                <div class="budget-progress-bar" id="budget-progress-bar"></div>
+                            </div>
+                            <div class="budget-stats">
+                                <div class="budget-stat">
+                                    <span class="budget-stat-label">Spent</span>
+                                    <span class="budget-stat-value" id="budget-spent">$0</span>
+                                </div>
+                                <div class="budget-stat">
+                                    <span class="budget-stat-label">Remaining</span>
+                                    <span class="budget-stat-value" id="budget-remaining">$0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Category Budgets</h3>
+                </div>
+                <div class="card-body">
+                    <div id="category-budgets"></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Insights Page Template -->
+    <template id="insights-template">
+        <div class="insights-page">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Spending Insights</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="insights-chart"></canvas>
+                </div>
+            </div>
+
+            <div class="insights-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Top Categories</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="top-categories"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Spending Patterns</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="spending-patterns"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Add/Edit Expense Modal Template -->
+    <template id="expense-modal-template">
+        <div class="modal-overlay" id="expense-modal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="modal-title">Add Expense</h3>
+                    <button class="modal-close" id="close-modal">×</button>
+                </div>
+                <form id="expense-form" class="modal-body">
+                    <input type="hidden" id="expense-id">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="expense-description">Description</label>
+                            <input type="text" id="expense-description" name="description" placeholder="e.g., Grocery shopping">
+                        </div>
+                        <div class="form-group">
+                            <label for="expense-amount">Amount ($) *</label>
+                            <input type="number" id="expense-amount" name="amount" step="0.01" min="0" placeholder="0.00" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="expense-category">Category *</label>
+                            <select id="expense-category" name="category" required>
+                                <option value="">Select category</option>
+                                <option value="Food">🍔 Food</option>
+                                <option value="Travel">✈️ Travel</option>
+                                <option value="Shopping">🛍️ Shopping</option>
+                                <option value="Bills">📄 Bills</option>
+                                <option value="Entertainment">🎮 Entertainment</option>
+                                <option value="Health">⚕️ Health</option>
+                                <option value="Others">📦 Others</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="expense-date">Date *</label>
+                            <input type="date" id="expense-date" name="date" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="expense-notes">Notes</label>
+                        <textarea id="expense-notes" name="notes" rows="3" placeholder="Add any additional notes or comments..."></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" id="cancel-btn">Cancel</button>
+                        <button type="submit" class="btn-primary">
+                            <span id="submit-text">Add Expense</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </template>
+
+    <!-- Budget Edit Modal Template -->
+    <template id="budget-modal-template">
+        <div class="modal-overlay" id="budget-modal">
+            <div class="modal modal-small">
+                <div class="modal-header">
+                    <h3 class="modal-title">Set Monthly Budget</h3>
+                    <button class="modal-close" id="close-budget-modal">×</button>
+                </div>
+                <form id="budget-form" class="modal-body">
+                    <div class="form-group">
+                        <label for="budget-amount">Monthly Budget ($)</label>
+                        <input type="number" id="budget-amount" name="budget" step="0.01" min="0" placeholder="Enter your budget" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" id="cancel-budget-btn">Cancel</button>
+                        <button type="submit" class="btn-primary">Save Budget</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </template>
+
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/chart.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
